@@ -14,12 +14,22 @@
 
 </head>
 
+
 <body>
+
 	<div class="player">
 		<!-- Dashboard -->
 		<div class="dashboard">
 			<!-- Header -->
 			<header>
+				<div class="wrapper">
+					<div class="display">
+						<div class="element"></div>
+						<div id="time"></div>
+					</div>
+					<span></span>
+					<span></span>
+				</div>
 				<h4>Now playing:</h4>
 				<h2>String 57th & 9th</h2>
 			</header>
@@ -62,7 +72,7 @@
 		</div>
 	</div>
 	<script>
-		/**
+		/** 
 		 * 1. Render songs
 		 * 2. Scroll top
 		 * 3. Play/ pause / seek
@@ -78,10 +88,10 @@
 		const $$ = document.querySelectorAll.bind(document);
 
 		const player = $('.player');
+		const cd = $('.cd');
 		const heading = $('header h2');
 		const cdThumb = $('.cd-thumb');
 		const audio = $('#audio');
-		const cd = $('.cd');
 		const playBtn = $('.btn-toggle-play');
 
 		const app = {
@@ -136,7 +146,33 @@
 					</div>
 					`;
 				})
-				$('.playlist').innerHTML = htmls.join('');
+				document.querySelector('.playlist').innerHTML = htmls.join('');
+			},
+			clockTime: function () {
+				const time = $('#time');
+				setInterval(() => {
+					let date = new Date();
+					let hours = date.getHours();
+					let minutes = date.getMinutes();
+					let seconds = date.getSeconds();
+					let day_night = "AM"
+
+					if (hours > 12) {
+						hours = hours - 12;
+						day_night = "PM";
+					}
+					if (hours < 10) {
+						hours = "0" + hours;
+					}
+					if (minutes < 10) {
+						minutes = "0" + minutes;
+					}
+					if (seconds < 10) {
+						seconds = "0" + seconds;
+					}
+
+					time.textContent = hours + " : " + minutes + " : " + seconds + " " + day_night;
+				})
 			},
 			// handle
 			defineProperties: function () {
@@ -147,20 +183,18 @@
 				})
 			},
 			hankdlEvents: function () {
-				const cdWidth = cd.offsetWidth;
+				//cdWidth = 200 px
+				const cdWidth = cd.offsetWidth
 
+				// Listen DOM events in Document window
 				document.onscroll = function () {
-					const scrollTop = window.scrollY || document.documentElement.scrollTop;
-					const newCdWidth = cdWidth - scrollTop;
-
+					const scrollTop = window.scrollY || document.documentElement.scrollTop
+					// tính độ dài khi cuộn 
+					const newCdWidth = cdWidth - scrollTop
+					// Add style width cho class cd chứa bên ngoài
 					cd.style.width = newCdWidth > 0 ? newCdWidth + 'px' : 0;
+					// lấy kích thước 
 					cd.style.opacity = newCdWidth / cdWidth
-				}
-				//Handle click play
-				playBtn.onclick = function () {
-					audio.play();
-					player.classList.add('playing');
-
 				}
 			},
 			loadCurrentSong: function () {
@@ -171,6 +205,8 @@
 				audio.src = this.currentSong.path
 			},
 			start: function () {
+				this.clockTime();
+
 				this.defineProperties();
 
 				this.hankdlEvents();
